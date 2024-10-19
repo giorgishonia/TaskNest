@@ -82,7 +82,6 @@ export default function EnhancedTodoApp() {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [showProfileSettings, setShowProfileSettings] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -175,7 +174,6 @@ export default function EnhancedTodoApp() {
     try {
       await deleteDoc(doc(db, 'tasks', taskId))
       setDeleteDialogOpen(false)
-      setTaskToDelete(null)
     } catch (error) {
       console.error("Error deleting task:", error)
     }
@@ -511,16 +509,37 @@ export default function EnhancedTodoApp() {
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => {
-                            setTaskToDelete(task.id)
-                            setDeleteDialogOpen(true)
-                          }}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
+                        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault(); // Prevent the dropdown from closing
+                                setDeleteDialogOpen(true); // Open the delete dialog
+                              }}
+                              className="text-red-600 flex items-center w-full"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your task.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => {
+                                if (task.id) {
+                                  deleteTask(task.id); // Use task.id here
+                                  setDeleteDialogOpen(false); // Close the dialog after deletion
+                                }
+                              }}>Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -544,31 +563,6 @@ export default function EnhancedTodoApp() {
           </AnimatePresence>
         </Reorder.Group>
       </main>
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your task.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setDeleteDialogOpen(false)
-              setTaskToDelete(null)
-            }}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              if (taskToDelete) {
-                deleteTask(taskToDelete)
-              }
-            }}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
