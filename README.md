@@ -24,8 +24,8 @@ Make sure you have the following installed:
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/tasknest.git
-    cd tasknest
+    git clone https://github.com/giorgishonia/TaskNest.git
+    cd TaskNest
     ```
 
 2. **Install dependencies:**
