@@ -11,7 +11,7 @@ TaskNest is a simple Todo List app built with React and Firebase, allowing users
 - **React:** Frontend framework.
 - **Firebase:** Backend for authentication and Firestore database.
 - **TypeScript:** Ensures type safety.
-- **Vercel (or your preferred hosting):** For deployment (optional).
+- **Vercel:** For deployment.
 
 ## Getting Started
 
